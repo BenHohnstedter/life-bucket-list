@@ -1,0 +1,11 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="LifeBucketList.App.Controls.GermanDatePicker">
+    <Button x:Name="TriggerButton" Classes="date-field-trigger" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch">
+        <Button.Flyout>
+            <Flyout Placement="BottomEdgeAlignedLeft">
+                <Calendar x:Name="CalendarControl" SelectionMode="SingleDate" />
+            </Flyout>
+        </Button.Flyout>
+    </Button>
+</UserControl>

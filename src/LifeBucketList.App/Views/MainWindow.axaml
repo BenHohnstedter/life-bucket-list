@@ -1,0 +1,183 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:LifeBucketList.App.ViewModels"
+        xmlns:models="using:LifeBucketList.Domain.Models"
+        xmlns:controls="using:LifeBucketList.App.Controls"
+        xmlns:conv="using:Avalonia.Data.Converters"
+        x:Class="LifeBucketList.App.Views.MainWindow"
+        x:Name="RootWindow"
+        Title="Life Bucket List"
+        Width="1120"
+        Height="740"
+        MinWidth="760"
+        MinHeight="480"
+        Icon="/Assets/app-logo.ico">
+    <Grid RowDefinitions="Auto,Auto,*">
+
+        <!-- Header -->
+        <Border Grid.Row="0" Classes="app-header">
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <Image Source="/Assets/app-logo.png" Width="28" Height="28" />
+                    <TextBlock Text="Life Bucket List" Classes="app-title" VerticalAlignment="Center" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="0,0,20,0">
+                    <TextBlock Text="🌙" VerticalAlignment="Center" Opacity="0.7" />
+                    <ToggleSwitch IsChecked="{Binding IsDarkTheme, Mode=TwoWay}" OnContent="" OffContent="" />
+                </StackPanel>
+
+                <Button Grid.Column="2" Content="Importieren" Classes="secondary" Command="{Binding ImportCommand}" Margin="0,0,8,0" />
+                <Button Grid.Column="3" Content="Exportieren" Classes="secondary" Command="{Binding ExportCommand}" Margin="0,0,8,0" />
+                <Button Grid.Column="4" Content="+ Neuer Eintrag" Classes="primary" Command="{Binding AddEntryCommand}" IsVisible="{Binding !IsDashboardSelected}" />
+            </Grid>
+        </Border>
+
+        <!-- Tab strip -->
+        <Border Grid.Row="1" Classes="tab-strip-container">
+            <DockPanel LastChildFill="True">
+                <Button DockPanel.Dock="Left"
+                        Content="📊 Übersicht"
+                        Command="{Binding SelectDashboardCommand}"
+                        Classes="tab-item"
+                        Classes.selected="{Binding IsDashboardSelected}" />
+
+                <ListBox DockPanel.Dock="Left"
+                         Classes="tab-strip"
+                         ItemsSource="{Binding Categories}"
+                         SelectedItem="{Binding SelectedCategory, Mode=TwoWay}">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="models:Category">
+                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <!-- Content -->
+        <Grid Grid.Row="2">
+
+            <!-- Entries panel -->
+            <Grid RowDefinitions="Auto,*" IsVisible="{Binding !IsDashboardSelected}">
+                <Border Grid.Row="0" Classes="toolbar">
+                    <Grid ColumnDefinitions="*,Auto,Auto">
+                        <TextBox Grid.Column="0"
+                                 Text="{Binding SearchText, Mode=TwoWay}"
+                                 Watermark="Suchen…"
+                                 Classes="search-box" />
+                        <ComboBox Grid.Column="1"
+                                  Margin="10,0,0,0"
+                                  Width="190"
+                                  ItemsSource="{Binding RatingFilters}"
+                                  SelectedItem="{Binding SelectedRatingFilter, Mode=TwoWay}" />
+                        <ComboBox Grid.Column="2"
+                                  Margin="10,0,0,0"
+                                  Width="220"
+                                  ItemsSource="{Binding SortOptions}"
+                                  SelectedItem="{Binding SelectedSortOption, Mode=TwoWay}" />
+                    </Grid>
+                </Border>
+
+                <ScrollViewer Grid.Row="1">
+                    <StackPanel Margin="24" Spacing="12">
+                        <controls:WorldMapControl Height="420"
+                                                   Margin="0,0,0,12"
+                                                   HighlightedCountryCodes="{Binding VisitedCountryCodes}"
+                                                   IsVisible="{Binding IsDestinationsCategorySelected}" />
+
+                        <TextBlock Text="Noch keine Einträge in dieser Kategorie."
+                                   Classes="empty-hint"
+                                   IsVisible="{Binding HasNoDisplayedEntries}" />
+
+                        <ItemsControl ItemsSource="{Binding DisplayedEntries}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Spacing="16" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="vm:EntryListItem">
+                                    <Border Classes="entry-card">
+                                        <Grid ColumnDefinitions="Auto,*,Auto">
+                                            <Image Grid.Column="0"
+                                                   Source="{Binding CoverBitmap}"
+                                                   Classes="cover-thumb"
+                                                   Margin="0,0,16,0"
+                                                   VerticalAlignment="Center"
+                                                   IsVisible="{Binding CoverBitmap, Converter={x:Static conv:ObjectConverters.IsNotNull}}" />
+                                            <StackPanel Grid.Column="1" Spacing="6" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Title}" Classes="entry-title" />
+                                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                                    <TextBlock Text="{Binding DateText}" Classes="entry-meta" />
+                                                    <controls:StarRatingControl Value="{Binding RatingValue}" IsReadOnly="True" StarSize="16" />
+                                                </StackPanel>
+                                                <TextBlock Text="{Binding Note}"
+                                                           Classes="entry-note"
+                                                           TextWrapping="Wrap"
+                                                           IsVisible="{Binding Note, Converter={x:Static conv:StringConverters.IsNotNullOrEmpty}}" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Top">
+                                                <Button Content="Bearbeiten"
+                                                        Classes="secondary small"
+                                                        Command="{Binding #RootWindow.DataContext.EditEntryCommand}"
+                                                        CommandParameter="{Binding Source}" />
+                                                <Button Content="Löschen"
+                                                        Classes="secondary small danger"
+                                                        Command="{Binding #RootWindow.DataContext.DeleteEntryCommand}"
+                                                        CommandParameter="{Binding Source}" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+
+            <!-- Dashboard panel -->
+            <ScrollViewer IsVisible="{Binding IsDashboardSelected}">
+                <StackPanel Margin="32" Spacing="24" MaxWidth="640" HorizontalAlignment="Left">
+                    <TextBlock Text="Übersicht" Classes="section-title" />
+
+                    <StackPanel Orientation="Horizontal" Spacing="32">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="{Binding DashboardTotalEntries}" Classes="stat-number" />
+                            <TextBlock Text="Einträge insgesamt" Classes="entry-meta" />
+                        </StackPanel>
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="{Binding DashboardOverallAverageText}" Classes="stat-number" />
+                            <TextBlock Text="Durchschnittliche Bewertung" Classes="entry-meta" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <ItemsControl ItemsSource="{Binding DashboardRows}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="vm:CategoryStatRow">
+                                <Grid ColumnDefinitions="140,*,90" Margin="0,6">
+                                    <TextBlock Grid.Column="0" Text="{Binding CategoryName}" VerticalAlignment="Center" />
+                                    <ProgressBar Grid.Column="1"
+                                                 Classes="stat-bar"
+                                                 Minimum="0" Maximum="1"
+                                                 Value="{Binding BarFraction}"
+                                                 Margin="0,0,28,0"
+                                                 VerticalAlignment="Center" />
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="18">
+                                        <TextBlock Text="{Binding EntryCount}" />
+                                        <TextBlock Text="{Binding AverageRatingText}" Classes="entry-meta" />
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</Window>

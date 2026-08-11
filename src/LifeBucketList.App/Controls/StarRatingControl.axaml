@@ -1,0 +1,17 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="LifeBucketList.App.Controls.StarRatingControl">
+    <UserControl.Styles>
+        <Style Selector="Path.star">
+            <Setter Property="Stretch" Value="Uniform" />
+            <Setter Property="Fill" Value="{DynamicResource StarEmptyBrush}" />
+        </Style>
+        <Style Selector="Path.star.filled">
+            <Setter Property="Fill" Value="{DynamicResource StarFilledBrush}" />
+        </Style>
+        <Style Selector="Path.star.editable:pointerover">
+            <Setter Property="Opacity" Value="0.75" />
+        </Style>
+    </UserControl.Styles>
+    <StackPanel x:Name="StarsPanel" Orientation="Horizontal" Spacing="4" />
+</UserControl>

@@ -1,0 +1,75 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+
+  <Package Name="Life Bucket List"
+           Manufacturer="Life Bucket List"
+           Version="1.5.0"
+           UpgradeCode="6db0d7bb-9cd8-440f-b5d6-61bc7558ffa4"
+           Language="1031"
+           Scope="perUserOrMachine">
+
+    <SummaryInformation Description="Life Bucket List Installer" />
+    <!-- AllowSameVersionUpgrades: without it, reinstalling an MSI built without a Version bump over
+         an existing install of the same version silently does nothing, leaving the old files in
+         place. This guarantees a reinstall always replaces the app with whatever was just built. -->
+    <MajorUpgrade DowngradeErrorMessage="Es ist bereits eine neuere Version von Life Bucket List installiert."
+                  AllowSameVersionUpgrades="yes" />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Icon Id="AppIcon.ico" SourceFile="$(var.PublishDir)\..\src\LifeBucketList.App\Assets\app-logo.ico" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon.ico" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+
+    <StandardDirectory Id="ProgramFiles6432Folder">
+      <Directory Id="INSTALLFOLDER" Name="Life Bucket List">
+        <Component Id="MainExecutable" Guid="4e4a2f2a-2f1b-4a5a-9d1e-8a5a6f2b1c01">
+          <File Id="AppExe" Source="$(var.PublishDir)\LifeBucketList.App.exe" KeyPath="yes">
+            <Shortcut Id="StartMenuShortcut"
+                      Directory="ProgramMenuFolder"
+                      Name="Life Bucket List"
+                      WorkingDirectory="INSTALLFOLDER"
+                      Icon="AppIcon.ico"
+                      Advertise="yes" />
+          </File>
+        </Component>
+        <Component Id="NativeAngle" Guid="4e4a2f2a-2f1b-4a5a-9d1e-8a5a6f2b1c02">
+          <File Id="NativeAngleFile" Source="$(var.PublishDir)\av_libglesv2.dll" KeyPath="yes" />
+        </Component>
+        <Component Id="NativeSqlite" Guid="4e4a2f2a-2f1b-4a5a-9d1e-8a5a6f2b1c03">
+          <File Id="NativeSqliteFile" Source="$(var.PublishDir)\e_sqlite3.dll" KeyPath="yes" />
+        </Component>
+        <Component Id="NativeHarfBuzz" Guid="4e4a2f2a-2f1b-4a5a-9d1e-8a5a6f2b1c04">
+          <File Id="NativeHarfBuzzFile" Source="$(var.PublishDir)\libHarfBuzzSharp.dll" KeyPath="yes" />
+        </Component>
+        <Component Id="NativeSkia" Guid="4e4a2f2a-2f1b-4a5a-9d1e-8a5a6f2b1c05">
+          <File Id="NativeSkiaFile" Source="$(var.PublishDir)\libSkiaSharp.dll" KeyPath="yes" />
+        </Component>
+      </Directory>
+    </StandardDirectory>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Component Id="StartMenuShortcutCleanup" Guid="4e4a2f2a-2f1b-4a5a-9d1e-8a5a6f2b1c06">
+        <RegistryValue Root="HKCU"
+                        Key="Software\LifeBucketList"
+                        Name="StartMenuShortcutInstalled"
+                        Type="integer"
+                        Value="1"
+                        KeyPath="yes" />
+        <RemoveFolder Id="RemoveProgramMenuFolder" On="uninstall" />
+      </Component>
+    </StandardDirectory>
+
+    <Feature Id="MainFeature" Title="Life Bucket List" Level="1">
+      <ComponentRef Id="MainExecutable" />
+      <ComponentRef Id="NativeAngle" />
+      <ComponentRef Id="NativeSqlite" />
+      <ComponentRef Id="NativeHarfBuzz" />
+      <ComponentRef Id="NativeSkia" />
+      <ComponentRef Id="StartMenuShortcutCleanup" />
+    </Feature>
+
+    <ui:WixUI Id="WixUI_InstallDir" />
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+
+  </Package>
+</Wix>
