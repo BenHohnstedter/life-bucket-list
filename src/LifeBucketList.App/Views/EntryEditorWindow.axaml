@@ -8,119 +8,126 @@
         Title="{Binding WindowTitle}"
         Width="440"
         Classes="dialog">
-    <StackPanel Classes="dialog-content">
-        <TextBlock Text="{Binding WindowTitle}" Classes="dialog-title" />
+    <!-- Title and buttons are pinned outside the scroll area so they're always reachable, no matter
+         how many fields are visible (Konzerte alone can show 3 extra fields on top of cover search
+         results) or how short the screen is. -->
+    <Grid RowDefinitions="Auto,*,Auto" Margin="24">
+        <TextBlock Grid.Row="0" Text="{Binding WindowTitle}" Classes="dialog-title" Margin="0,0,0,16" />
 
-        <StackPanel Classes="field">
-            <TextBlock Text="Titel *" Classes="field-label" />
-            <TextBox x:Name="TitleBox" Text="{Binding Title, Mode=TwoWay}" Watermark="{Binding TitlePlaceholder}" />
-        </StackPanel>
-
-        <StackPanel Classes="field">
-            <TextBlock Text="Kategorie *" Classes="field-label" />
-            <ComboBox ItemsSource="{Binding AvailableCategories}"
-                      SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
-                      DisplayMemberBinding="{Binding Name}"
-                      HorizontalAlignment="Stretch" />
-        </StackPanel>
-
-        <StackPanel Classes="field" IsVisible="{Binding ShowCountryPicker}">
-            <TextBlock Text="Land" Classes="field-label" />
-            <ComboBox ItemsSource="{Binding AvailableCountries}"
-                      SelectedItem="{Binding SelectedCountry, Mode=TwoWay}"
-                      DisplayMemberBinding="{Binding Name}"
-                      HorizontalAlignment="Stretch" />
-        </StackPanel>
-
-        <StackPanel Classes="field" IsVisible="{Binding ShowRegionPicker}">
-            <TextBlock Text="Art" Classes="field-label" />
-            <ToggleSwitch IsChecked="{Binding IsFestivalMode, Mode=TwoWay}" OnContent="Festival" OffContent="Künstler" HorizontalAlignment="Left" />
-        </StackPanel>
-
-        <StackPanel Classes="field" IsVisible="{Binding ShowRegionPicker}">
-            <TextBlock Text="Ort/Venue" Classes="field-label" />
-            <TextBox Text="{Binding Venue, Mode=TwoWay}" Watermark="z. B. Waldbühne Berlin" />
-        </StackPanel>
-
-        <StackPanel Classes="field" IsVisible="{Binding ShowRegionPicker}">
-            <TextBlock Text="Region" Classes="field-label" />
-            <ComboBox ItemsSource="{Binding AvailableRegions}"
-                      SelectedItem="{Binding SelectedRegion, Mode=TwoWay}"
-                      DisplayMemberBinding="{Binding Name}"
-                      HorizontalAlignment="Stretch" />
-        </StackPanel>
-
-        <StackPanel Classes="field" IsVisible="{Binding ShowCoverSearch}">
-            <TextBlock Text="Cover" Classes="field-label" />
-            <StackPanel Orientation="Horizontal" Spacing="10">
-                <Image Source="{Binding CoverPreview}"
-                       Width="84" Height="120" Stretch="UniformToFill"
-                       IsVisible="{Binding CoverPreview, Converter={x:Static conv:ObjectConverters.IsNotNull}}"
-                       Classes="cover-preview" />
-                <StackPanel Spacing="6" VerticalAlignment="Center">
-                    <Button Content="Cover entfernen"
-                            Classes="secondary small"
-                            HorizontalAlignment="Left"
-                            Command="{Binding ClearCoverCommand}"
-                            IsVisible="{Binding CoverImageUrl, Converter={x:Static conv:StringConverters.IsNotNullOrEmpty}}" />
-                    <TextBlock Text="Suche läuft…"
-                               Classes="entry-meta"
-                               IsVisible="{Binding IsSearchingCover}" />
-                    <TextBlock Text="{Binding CoverSearchMessage}"
-                               Classes="entry-meta"
-                               TextWrapping="Wrap"
-                               IsVisible="{Binding CoverSearchMessage, Converter={x:Static conv:StringConverters.IsNotNullOrEmpty}}" />
+        <ScrollViewer Grid.Row="1" MaxHeight="420" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Spacing="16">
+                <StackPanel Classes="field">
+                    <TextBlock Text="Titel *" Classes="field-label" />
+                    <TextBox x:Name="TitleBox" Text="{Binding Title, Mode=TwoWay}" Watermark="{Binding TitlePlaceholder}" />
                 </StackPanel>
+
+                <StackPanel Classes="field">
+                    <TextBlock Text="Kategorie *" Classes="field-label" />
+                    <ComboBox ItemsSource="{Binding AvailableCategories}"
+                              SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
+                              DisplayMemberBinding="{Binding Name}"
+                              HorizontalAlignment="Stretch" />
+                </StackPanel>
+
+                <StackPanel Classes="field" IsVisible="{Binding ShowCountryPicker}">
+                    <TextBlock Text="Land" Classes="field-label" />
+                    <ComboBox ItemsSource="{Binding AvailableCountries}"
+                              SelectedItem="{Binding SelectedCountry, Mode=TwoWay}"
+                              DisplayMemberBinding="{Binding Name}"
+                              HorizontalAlignment="Stretch" />
+                </StackPanel>
+
+                <StackPanel Classes="field" IsVisible="{Binding ShowRegionPicker}">
+                    <TextBlock Text="Art" Classes="field-label" />
+                    <ToggleSwitch IsChecked="{Binding IsFestivalMode, Mode=TwoWay}" OnContent="Festival" OffContent="Künstler" HorizontalAlignment="Left" />
+                </StackPanel>
+
+                <StackPanel Classes="field" IsVisible="{Binding ShowRegionPicker}">
+                    <TextBlock Text="Ort/Venue" Classes="field-label" />
+                    <TextBox Text="{Binding Venue, Mode=TwoWay}" Watermark="z. B. Waldbühne Berlin" />
+                </StackPanel>
+
+                <StackPanel Classes="field" IsVisible="{Binding ShowRegionPicker}">
+                    <TextBlock Text="Region" Classes="field-label" />
+                    <ComboBox ItemsSource="{Binding AvailableRegions}"
+                              SelectedItem="{Binding SelectedRegion, Mode=TwoWay}"
+                              DisplayMemberBinding="{Binding Name}"
+                              HorizontalAlignment="Stretch" />
+                </StackPanel>
+
+                <StackPanel Classes="field" IsVisible="{Binding ShowCoverSearch}">
+                    <TextBlock Text="Cover" Classes="field-label" />
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <Image Source="{Binding CoverPreview}"
+                               Width="84" Height="120" Stretch="UniformToFill"
+                               IsVisible="{Binding CoverPreview, Converter={x:Static conv:ObjectConverters.IsNotNull}}"
+                               Classes="cover-preview" />
+                        <StackPanel Spacing="6" VerticalAlignment="Center">
+                            <Button Content="Cover entfernen"
+                                    Classes="secondary small"
+                                    HorizontalAlignment="Left"
+                                    Command="{Binding ClearCoverCommand}"
+                                    IsVisible="{Binding CoverImageUrl, Converter={x:Static conv:StringConverters.IsNotNullOrEmpty}}" />
+                            <TextBlock Text="Suche läuft…"
+                                       Classes="entry-meta"
+                                       IsVisible="{Binding IsSearchingCover}" />
+                            <TextBlock Text="{Binding CoverSearchMessage}"
+                                       Classes="entry-meta"
+                                       TextWrapping="Wrap"
+                                       IsVisible="{Binding CoverSearchMessage, Converter={x:Static conv:StringConverters.IsNotNullOrEmpty}}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <ItemsControl ItemsSource="{Binding CoverSearchResults}" Margin="0,8,0,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="vm:MediaSearchResultItem">
+                                <Button Classes="cover-result"
+                                        Command="{Binding #Editor.DataContext.SelectCoverCommand}"
+                                        CommandParameter="{Binding}"
+                                        ToolTip.Tip="{Binding DisplayTitle}">
+                                    <Image Source="{Binding ThumbnailBitmap}" Width="68" Height="97" Stretch="UniformToFill" />
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <StackPanel Classes="field">
+                    <TextBlock Text="Datum" Classes="field-label" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <controls:GermanDatePicker x:Name="DatePickerControl" Grid.Column="0" SelectedDate="{Binding OccurredOn, Mode=TwoWay}" HorizontalAlignment="Stretch" />
+                        <Button Grid.Column="1"
+                                Content="Datum entfernen"
+                                Classes="secondary small"
+                                Margin="8,0,0,0"
+                                VerticalAlignment="Center"
+                                IsVisible="{Binding OccurredOn, Converter={x:Static conv:ObjectConverters.IsNotNull}}"
+                                Click="OnClearDateClick" />
+                    </Grid>
+                </StackPanel>
+
+                <StackPanel Classes="field">
+                    <TextBlock Text="Bewertung" Classes="field-label" />
+                    <controls:StarRatingControl Value="{Binding Rating, Mode=TwoWay}" IsReadOnly="False" StarSize="28" HorizontalAlignment="Left" />
+                </StackPanel>
+
+                <StackPanel Classes="field">
+                    <TextBlock Text="Notiz" Classes="field-label" />
+                    <TextBox x:Name="NoteBox" Text="{Binding Note, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" Height="90" Watermark="Deine Gedanken dazu…" />
+                </StackPanel>
+
+                <TextBlock x:Name="ValidationErrorText" Classes="validation-error" IsVisible="False" TextWrapping="Wrap" />
             </StackPanel>
+        </ScrollViewer>
 
-            <ItemsControl ItemsSource="{Binding CoverSearchResults}" Margin="0,8,0,0">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="vm:MediaSearchResultItem">
-                        <Button Classes="cover-result"
-                                Command="{Binding #Editor.DataContext.SelectCoverCommand}"
-                                CommandParameter="{Binding}"
-                                ToolTip.Tip="{Binding DisplayTitle}">
-                            <Image Source="{Binding ThumbnailBitmap}" Width="68" Height="97" Stretch="UniformToFill" />
-                        </Button>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </StackPanel>
-
-        <StackPanel Classes="field">
-            <TextBlock Text="Datum" Classes="field-label" />
-            <Grid ColumnDefinitions="*,Auto">
-                <controls:GermanDatePicker x:Name="DatePickerControl" Grid.Column="0" SelectedDate="{Binding OccurredOn, Mode=TwoWay}" HorizontalAlignment="Stretch" />
-                <Button Grid.Column="1"
-                        Content="Datum entfernen"
-                        Classes="secondary small"
-                        Margin="8,0,0,0"
-                        VerticalAlignment="Center"
-                        IsVisible="{Binding OccurredOn, Converter={x:Static conv:ObjectConverters.IsNotNull}}"
-                        Click="OnClearDateClick" />
-            </Grid>
-        </StackPanel>
-
-        <StackPanel Classes="field">
-            <TextBlock Text="Bewertung" Classes="field-label" />
-            <controls:StarRatingControl Value="{Binding Rating, Mode=TwoWay}" IsReadOnly="False" StarSize="28" HorizontalAlignment="Left" />
-        </StackPanel>
-
-        <StackPanel Classes="field">
-            <TextBlock Text="Notiz" Classes="field-label" />
-            <TextBox x:Name="NoteBox" Text="{Binding Note, Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap" Height="90" Watermark="Deine Gedanken dazu…" />
-        </StackPanel>
-
-        <TextBlock x:Name="ValidationErrorText" Classes="validation-error" IsVisible="False" TextWrapping="Wrap" />
-
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Classes="dialog-buttons">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,16,0,0">
             <Button Content="Abbrechen" Classes="secondary" Click="OnCancelClick" />
             <Button Content="Speichern" Classes="primary" Click="OnSaveClick" />
         </StackPanel>
-    </StackPanel>
+    </Grid>
 </Window>

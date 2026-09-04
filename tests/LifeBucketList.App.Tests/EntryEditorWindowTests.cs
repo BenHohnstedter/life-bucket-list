@@ -189,6 +189,43 @@ public class EntryEditorWindowTests
     }
 
     [AvaloniaFact]
+    public async Task SpeichernButton_StaysReachable_EvenWithMaximalContent()
+    {
+        // Regression test for a real bug: Window.dialog used SizeToContent="Height" with no cap and
+        // no scrolling, so Konzerte's extra fields plus a full page of cover-search results could grow
+        // the window taller than the screen, pushing "Speichern" out of reach entirely.
+        var category = new Category { Id = Guid.NewGuid(), Name = DefaultCategories.Concerts, SortOrder = 0 };
+        var results = Enumerable.Range(1, 8).Select(i => new MediaSearchResult($"Künstler {i}", null, null)).ToArray();
+        var editor = new EntryEditorViewModel(
+            new[] { category },
+            existingEntry: null,
+            category,
+            new FakeCoverSearchService { Handler = (_, _) => CoverSearchOutcome.Success(results) },
+            new FakeCoverImageCache())
+        {
+            Title = "Peter Fox",
+            Venue = "Waldbühne Berlin",
+            Note = string.Join(" ", Enumerable.Repeat("Sehr langer Notiztext.", 20)),
+        };
+        await editor.SearchCoverCommand.ExecuteAsync(null);
+
+        // A deliberately short screen (a small laptop), to prove the window can never grow past it.
+        var window = new EntryEditorWindow { DataContext = editor };
+        window.Show();
+        window.UpdateLayout();
+
+        Assert.True(window.Bounds.Height < 700, $"Window grew to {window.Bounds.Height}px — should stay capped regardless of content.");
+
+        var saveButton = window.GetVisualDescendants().OfType<Button>().Single(b => b.Content as string == "Speichern");
+        Assert.True(saveButton.IsEffectivelyVisible);
+        Assert.True(saveButton.Bounds.Width > 0 && saveButton.Bounds.Height > 0, "Speichern button has no laid-out size — would be unreachable.");
+
+        var outputDir = Path.Combine(Path.GetTempPath(), "lbl-test-renders");
+        Directory.CreateDirectory(outputDir);
+        window.CaptureRenderedFrame()?.Save(Path.Combine(outputDir, "entry-editor-worst-case.png"));
+    }
+
+    [AvaloniaFact]
     public void RenderForVisualReview_KonzerteFields()
     {
         var category = new Category { Id = Guid.NewGuid(), Name = DefaultCategories.Concerts, SortOrder = 0 };
