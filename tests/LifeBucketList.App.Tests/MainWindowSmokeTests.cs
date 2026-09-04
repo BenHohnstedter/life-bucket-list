@@ -142,6 +142,28 @@ public class MainWindowSmokeTests : IAsyncLifetime
         SaveRenderForReview(window, "main-window-konzerte-with-map.png");
     }
 
+    [AvaloniaFact]
+    public async Task MainWindow_DarkTheme_RendersWithReskinnedPalette()
+    {
+        _dialogService.EntryEditorHandler = editor =>
+        {
+            editor.Title = "Peter Fox";
+            editor.SelectedCategory = _viewModel.Categories.Single(c => c.Name == LifeBucketList.Domain.Models.DefaultCategories.Concerts);
+            editor.Venue = "Waldbühne Berlin";
+            editor.SelectedRegion = LifeBucketList.Domain.Models.GermanRegions.FindByCode("DE-BE");
+            return true;
+        };
+        await _viewModel.AddEntryCommand.ExecuteAsync(null);
+        _viewModel.SelectedCategory = _viewModel.Categories.Single(c => c.Name == LifeBucketList.Domain.Models.DefaultCategories.Concerts);
+        _viewModel.IsDarkTheme = true;
+        Avalonia.Application.Current!.RequestedThemeVariant = Avalonia.Styling.ThemeVariant.Dark;
+
+        var window = new MainWindow { DataContext = _viewModel };
+        window.Show();
+
+        SaveRenderForReview(window, "main-window-dark-theme.png");
+    }
+
     private static void SaveRenderForReview(Window window, string fileName)
     {
         var frame = window.CaptureRenderedFrame();
