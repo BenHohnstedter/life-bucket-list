@@ -6,4 +6,5 @@ public enum MediaKind
     Movie,
     Series,
     VideoGame,
+    Artist,
 }

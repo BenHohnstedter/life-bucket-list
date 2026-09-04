@@ -9,9 +9,10 @@ public static class DefaultCategories
     public const string VideoGames = "Videospiele";
     public const string Destinations = "Reiseziele";
     public const string Activities = "Aktivitäten";
+    public const string Concerts = "Konzerte";
 
-    /// <summary>Categories whose entries can show a searched cover image (movie/TV/game databases).</summary>
-    public static readonly IReadOnlyList<string> CoverSearchEnabledCategories = new[] { Movies, Series, VideoGames };
+    /// <summary>Categories whose entries can show a searched cover image (movie/TV/game/artist databases).</summary>
+    public static readonly IReadOnlyList<string> CoverSearchEnabledCategories = new[] { Movies, Series, VideoGames, Concerts };
 
     public static readonly IReadOnlyList<string> Names = new[]
     {
@@ -20,5 +21,6 @@ public static class DefaultCategories
         Movies,
         Series,
         VideoGames,
+        Concerts,
     };
 }
