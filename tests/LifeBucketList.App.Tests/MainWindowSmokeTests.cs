@@ -102,11 +102,12 @@ public class MainWindowSmokeTests : IAsyncLifetime
         var window = new MainWindow { DataContext = _viewModel };
         window.Show();
 
-        var tabLabels = window.GetVisualDescendants().OfType<TextBlock>().Select(t => t.Text).ToList();
-        // Verifies both the new tab order and that all five fixed categories render as tabs.
-        Assert.Equal(
-            LifeBucketList.Domain.Models.DefaultCategories.Names,
-            tabLabels.Where(t => LifeBucketList.Domain.Models.DefaultCategories.Names.Contains(t)));
+        // Scoped to the sidebar's nav ListBox specifically: the content header also shows the
+        // selected category's name as its title, which would otherwise double-count one entry and
+        // throw off a simple "every TextBlock matching a category name, in order" check.
+        var sidebarNav = window.GetVisualDescendants().OfType<ListBox>().Single(lb => lb.Classes.Contains("sidebar-nav"));
+        var navLabels = sidebarNav.GetVisualDescendants().OfType<TextBlock>().Select(t => t.Text ?? string.Empty).ToList();
+        Assert.Equal(LifeBucketList.Domain.Models.DefaultCategories.Names, navLabels);
 
         var map = window.GetVisualDescendants().OfType<LifeBucketList.App.Controls.WorldMapControl>().Single();
         Assert.True(map.IsEffectivelyVisible);

@@ -219,69 +219,82 @@
         <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
 
-    <!-- Tab strip -->
-    <Style Selector="Border.tab-strip-container">
+    <!-- Sidebar navigation -->
+    <Style Selector="Border.sidebar">
         <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush1}" />
-        <Setter Property="BorderThickness" Value="0,0,0,1" />
-        <Setter Property="Padding" Value="16,0" />
+        <Setter Property="BorderThickness" Value="0,0,1,0" />
     </Style>
-    <Style Selector="ListBox.tab-strip">
+    <!-- The colored bar to the left of a nav row's icon; hidden at rest, faded in when selected —
+         a per-item accent cue that works alongside each category's own icon-badge color. -->
+    <Style Selector="Border.nav-indicator">
+        <Setter Property="Opacity" Value="0" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.15" />
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="ListBoxItem:selected Border.nav-indicator">
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="Button.nav-item.selected Border.nav-indicator">
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="ListBox.sidebar-nav">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="ListBox.sidebar-nav ListBoxItem">
         <Setter Property="Padding" Value="0" />
-    </Style>
-    <Style Selector="ListBox.tab-strip ListBoxItem">
-        <Setter Property="Padding" Value="14,16" />
-        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
-        <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="CornerRadius" Value="{StaticResource RadiusSmall}" />
-    </Style>
-    <Style Selector="ListBox.tab-strip ListBoxItem:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource ControlHoverBrush}" />
-    </Style>
-    <Style Selector="ListBox.tab-strip ListBoxItem:selected /template/ ContentPresenter">
-        <Setter Property="Background" Value="Transparent" />
-    </Style>
-    <Style Selector="ListBox.tab-strip ListBoxItem:selected">
-        <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
-        <Setter Property="FontWeight" Value="SemiBold" />
-    </Style>
-    <Style Selector="Button.tab-item">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="CornerRadius" Value="{StaticResource RadiusSmall}" />
-        <Setter Property="Padding" Value="14,16" />
-        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+        <Setter Property="Margin" Value="0,2" />
+        <Setter Property="CornerRadius" Value="{StaticResource RadiusMedium}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         <Setter Property="Cursor" Value="Hand" />
     </Style>
-    <Style Selector="Button.tab-item.selected">
-        <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
-        <Setter Property="FontWeight" Value="SemiBold" />
-    </Style>
-    <Style Selector="Button.tab-item.selected Path.icon">
-        <Setter Property="Fill" Value="{DynamicResource AccentBrush}" />
-    </Style>
-    <Style Selector="Button.tab-item /template/ ContentPresenter">
+    <Style Selector="ListBox.sidebar-nav ListBoxItem /template/ ContentPresenter">
         <Setter Property="Transitions">
             <Transitions>
                 <BrushTransition Property="Background" Duration="0:0:0.15" />
             </Transitions>
         </Setter>
     </Style>
-    <Style Selector="Button.tab-item:pointerover /template/ ContentPresenter">
+    <Style Selector="ListBox.sidebar-nav ListBoxItem:pointerover /template/ ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource ControlHoverBrush}" />
     </Style>
-    <Style Selector="Button.tab-add-button">
+    <Style Selector="ListBox.sidebar-nav ListBoxItem:selected /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ControlHoverBrush}" />
+    </Style>
+    <Style Selector="ListBox.sidebar-nav ListBoxItem:selected">
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <!-- The "Übersicht" dashboard button styled to match the category ListBoxItems above. -->
+    <Style Selector="Button.nav-item">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
-        <Setter Property="Padding" Value="12,16" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="0,2,0,10" />
+        <Setter Property="CornerRadius" Value="{StaticResource RadiusMedium}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
     </Style>
-    <Style Selector="Button.tab-add-button:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="TextBlock.Foreground" Value="{DynamicResource AccentBrush}" />
+    <Style Selector="Button.nav-item /template/ ContentPresenter">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.15" />
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.nav-item:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ControlHoverBrush}" />
+    </Style>
+    <Style Selector="Button.nav-item.selected /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ControlHoverBrush}" />
+    </Style>
+    <Style Selector="Button.nav-item.selected">
+        <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
 
     <!-- Buttons -->
@@ -490,6 +503,25 @@
     </Style>
     <Style Selector="Border.entry-card:pointerover">
         <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+        <Setter Property="BoxShadow" Value="0 4 12 0 #1F000000, 0 2 6 0 #14000000" />
+    </Style>
+
+    <!-- Dashboard stat cards -->
+    <Style Selector="Border.stat-card">
+        <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush1}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource RadiusLarge}" />
+        <Setter Property="Padding" Value="18" />
+        <Setter Property="BoxShadow" Value="0 1 3 0 #14000000, 0 1 2 0 #10000000" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.15" />
+                <BoxShadowsTransition Property="BoxShadow" Duration="0:0:0.15" />
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Border.stat-card:pointerover">
         <Setter Property="BoxShadow" Value="0 4 12 0 #1F000000, 0 2 6 0 #14000000" />
     </Style>
     <Style Selector="TextBlock.entry-title">
