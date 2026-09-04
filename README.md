@@ -1,7 +1,7 @@
 # Life Bucket List
 
 Eine persönliche Desktop-App, um alles zu tracken, was du gesehen, gespielt, bereist oder erlebt hast:
-Reiseziele, Aktivitäten, Filme, Serien, Videospiele.
+Reiseziele, Aktivitäten, Filme, Serien, Videospiele, Konzerte.
 
 Einzelnutzer-App, keine Cloud, kein Login. Alle Daten liegen lokal auf deinem Rechner.
 
@@ -101,12 +101,14 @@ Standard-Windows-Integration (Startmenü, Registrierung, "Apps & Features").
 
 ## Cover-Suche einrichten
 
-Für die Kategorien **Filme**, **Serien** und **Videospiele** erscheinen beim Anlegen/Bearbeiten eines
-Eintrags automatisch passende Cover-Vorschläge, sobald du einen Titel eingibst (Live-Suche mit kurzer
-Verzögerung, kein Klick nötig). Das läuft über zwei kostenlose APIs:
+Für die Kategorien **Filme**, **Serien**, **Videospiele** und **Konzerte** (im Künstler-Modus)
+erscheinen beim Anlegen/Bearbeiten eines Eintrags automatisch passende Cover-Vorschläge, sobald du
+einen Titel eingibst (Live-Suche mit kurzer Verzögerung, kein Klick nötig). Das läuft über drei
+kostenlose APIs:
 
 - **[TMDb](https://www.themoviedb.org/)** für Filme & Serien
 - **[IGDB](https://api-docs.igdb.com/)** (Twitch-basiert) für Videospiele
+- **[Spotify](https://developer.spotify.com/)** für Konzerte-Künstler
 
 ### Kostenlosen API-Zugang besorgen
 
@@ -116,18 +118,25 @@ Verzögerung, kein Klick nötig). Das läuft über zwei kostenlose APIs:
    Twitch-App registrieren → man erhält eine **Client-ID** und ein **Client-Secret**. Die App holt
    sich damit selbst automatisch ein Zugriffstoken (OAuth2 Client-Credentials-Flow bei
    `id.twitch.tv`) und erneuert es, sobald es abläuft – dafür ist nichts manuell einzustellen.
+3. **Spotify:** Im [Spotify Developer Dashboard](https://developer.spotify.com/dashboard) eine
+   (kostenlose) App anlegen → man erhält eine **Client-ID** und ein **Client-Secret**. Genau wie bei
+   IGDB holt sich die App damit selbst automatisch ein Zugriffstoken (OAuth2 Client-Credentials-Flow
+   bei `accounts.spotify.com`) und erneuert es bei Bedarf.
 
 ### Zugangsdaten eintragen
 
 Drei Wege – alle optional, einer reicht (in dieser Reihenfolge ausgewertet):
 
-1. **Umgebungsvariablen:** `LBL_TMDB_API_KEY`, `LBL_IGDB_CLIENT_ID`, `LBL_IGDB_CLIENT_SECRET`.
+1. **Umgebungsvariablen:** `LBL_TMDB_API_KEY`, `LBL_IGDB_CLIENT_ID`, `LBL_IGDB_CLIENT_SECRET`,
+   `LBL_SPOTIFY_CLIENT_ID`, `LBL_SPOTIFY_CLIENT_SECRET`.
 2. **`.env`-Datei** im Projekt-Root (praktisch für die Entwicklung; wird beim Start gesucht, indem
    ausgehend vom Programmverzeichnis nach oben durchsucht wird):
    ```
    LBL_TMDB_API_KEY=dein-tmdb-key
    LBL_IGDB_CLIENT_ID=deine-client-id
    LBL_IGDB_CLIENT_SECRET=dein-client-secret
+   LBL_SPOTIFY_CLIENT_ID=deine-spotify-client-id
+   LBL_SPOTIFY_CLIENT_SECRET=dein-spotify-client-secret
    ```
 3. **Lokale JSON-Datei** (praktisch für die installierte App):
    `%AppData%\LifeBucketList\apikeys.json`:
@@ -135,7 +144,9 @@ Drei Wege – alle optional, einer reicht (in dieser Reihenfolge ausgewertet):
    {
      "TmdbApiKey": "dein-tmdb-key",
      "IgdbClientId": "deine-client-id",
-     "IgdbClientSecret": "dein-client-secret"
+     "IgdbClientSecret": "dein-client-secret",
+     "SpotifyClientId": "deine-spotify-client-id",
+     "SpotifyClientSecret": "dein-spotify-client-secret"
    }
    ```
 
@@ -163,11 +174,27 @@ stark vereinfacht, passend zum schlichten Stil der App) und werden zur Laufzeit 
 einfache Weltkarten-Projektion projiziert – vollständig offline, kein Netzwerkzugriff nötig. Die
 Zuordnung zu Einträgen läuft über den ISO-3166-1-alpha-2-Ländercode.
 
+## DACH-Karte (Konzerte)
+
+Bei der Kategorie **Konzerte** gibt es analog eine kleine Karte für Deutschland, Österreich und die
+Schweiz: ein Auftritt kann entweder einem bestimmten Künstler/Interpreten oder – über den
+"Art"-Umschalter im Bearbeitungsfenster – einem Festival ohne einzelnen Hauptact zugeordnet werden.
+Beide Modi tragen zusätzlich einen freien Veranstaltungsort/Venue-Text und eine Region (die 16
+deutschen Bundesländer plus Österreich/Schweiz als Ganzes); Regionen mit mindestens einem Eintrag
+werden auf der Karte hervorgehoben, genau wie bei der Reiseziele-Weltkarte.
+
+Die Bundesland-Umrisse stammen ebenfalls von Natural Earth, diesmal aus der feineren
+1:10m-Auflösung "Admin 1 – States, Provinces" (die 110m/50m-Stufen decken nur US-/Kanada-Regionen ab)
+– lokal auf Deutschland gefiltert und als [`germany-states-10m.geojson`](src/LifeBucketList.App/Assets/germany-states-10m.geojson)
+gebündelt (~300 KB statt der ~40 MB Rohdatei). Österreich und die Schweiz werden direkt aus den
+bereits gebündelten Weltkarten-Umrissen übernommen statt einen zweiten Datensatz mitzuliefern.
+
 ## Daten & Backup
 
 - Datenbank: `%AppData%\LifeBucketList\data.db` (wird beim ersten Start automatisch angelegt und
-  mit den fünf festen Kategorien befüllt; Schema-Erweiterungen für ältere Datenbanken – z. B. neue
-  Spalten für Cover/Land – laufen beim Start automatisch und verlustfrei mit).
+  mit den sechs festen Kategorien befüllt; Schema-Erweiterungen für ältere Datenbanken – z. B. neue
+  Spalten für Cover/Land/Konzerte oder eine neu hinzugekommene Kategorie – laufen beim Start
+  automatisch und verlustfrei mit).
 - **Exportieren**/**Importieren** (Buttons oben rechts) schreiben/lesen eine JSON-Datei mit allen
   Kategorien und Einträgen (inkl. Cover-URL und Land) – zum manuellen Sichern oder Übertragen auf
   ein anderes Gerät. Ein Import ersetzt alle aktuell gespeicherten Einträge (mit Sicherheitsabfrage);
@@ -188,11 +215,13 @@ aktuellen Build-Umgebung nicht installiert sind.
 
 Details, die offen waren und dokumentiert statt nachgefragt wurden:
 
-- **Kategorien sind fest**, in der Reihenfolge Reiseziele, Aktivitäten, Filme, Serien, Videospiele –
-  nicht mehr vom Nutzer erweiter-, umbenenn- oder löschbar. Eine bereits vorhandene Kategorie "Spiele"
-  (aus einer älteren Version) wird beim Start automatisch und ohne Datenverlust in "Videospiele"
-  umbenannt (gleiche ID, alle Einträge bleiben verknüpft); die Tab-Reihenfolge wird bei jedem Start
-  auf den aktuellen Stand migriert, falls sie sich seit der letzten Version geändert hat.
+- **Kategorien sind fest**, in der Reihenfolge Reiseziele, Aktivitäten, Filme, Serien, Videospiele,
+  Konzerte – nicht mehr vom Nutzer erweiter-, umbenenn- oder löschbar. Eine bereits vorhandene
+  Kategorie "Spiele" (aus einer älteren Version) wird beim Start automatisch und ohne Datenverlust in
+  "Videospiele" umbenannt (gleiche ID, alle Einträge bleiben verknüpft); die Tab-Reihenfolge wird bei
+  jedem Start auf den aktuellen Stand migriert, falls sie sich seit der letzten Version geändert hat.
+  Eine neu hinzugekommene feste Kategorie (wie Konzerte) wird beim Start auch in einer bereits
+  bestehenden, nicht-leeren Datenbank automatisch ergänzt statt nur bei einer komplett leeren.
 - **Speicherformat:** SQLite für die laufende App (robust, abfragefähig), JSON nur für den
   Export/Import (menschenlesbar, einfach zu versionieren/verschicken).
 - **Bewertung:** 1–5 Sterne, optional; ein erneuter Klick auf den aktuell niedrigsten aktiven Stern
@@ -238,3 +267,18 @@ Details, die offen waren und dokumentiert statt nachgefragt wurden:
   `AllowSameVersionUpgrades="yes"`, `build.ps1` räumt `publish/`/`installer-output/` vor jedem Build auf,
   und die Versionsnummer wurde auf 1.5.0 angehoben, damit ein `LifeBucketList.msi` immer die zuletzt
   gebaute Version installiert.
+- **Konzerte-Datenmodell statt Land wiederverwendet:** `Entry.CountryCode` ist per Doc-Kommentar und
+  im Code ausdrücklich "Reiseziele only". Statt es für Konzerte zweckzuentfremden, bekommt `Entry` drei
+  eigene, nullable Spalten – `Venue` (Freitext-Ort), `RegionCode` (Bundesland/AT/CH) und `IsFestival`
+  (persistierter Modus-Flag, damit ein Wiederbearbeiten den ursprünglichen Künstler-/Festival-Modus
+  korrekt wiederherstellt) – nach demselben additiven Muster wie die bereits vorhandenen
+  `CoverImageUrl`/`CountryCode`-Spalten.
+- **Cross-Plattform-Vorbereitung ohne echten Mobile-Build:** Domain/Data waren schon vor dieser Runde
+  UI-unabhängig; für diese Runde wurde bewusst kein Android/iOS-Head-Projekt angelegt (iOS lässt sich
+  ohne macOS/Xcode in dieser Umgebung ohnehin nicht bauen/verifizieren) – die Architektur bleibt
+  mobil-tauglich, ein späterer Head kann `Domain`/`Data` unverändert wiederverwenden.
+- **Eigenes Design-System statt Copy eines bestehenden:** Für das professionelle Redesign wurde bewusst
+  kein 1:1-Klon einer bekannten App/eines Frameworks gewählt, sondern ein eigenes, konsistentes System
+  (Radius-/Typografie-Skala, wiederverwendbare Farbtoken, gezielte Fluent-Resource-Overrides für
+  ComboBox/Calendar/ToggleSwitch, durchgängige Hover-/Pressed-/Fokus-/Disabled-Zustände, handgezeichnete
+  Vektor-Icons statt Emoji) direkt auf der bestehenden Apple-artigen Basis aufgebaut.
