@@ -23,7 +23,8 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="0,0,20,0">
-                    <TextBlock Text="🌙" VerticalAlignment="Center" Opacity="0.7" />
+                    <Path Classes="icon" VerticalAlignment="Center"
+                          Data="M8,2 A6,6 0 1,0 8,14 A6,6 0 1,0 8,2 Z M11,1.5 A5,5 0 1,1 11,11.5 A5,5 0 1,1 11,1.5 Z" />
                     <ToggleSwitch IsChecked="{Binding IsDarkTheme, Mode=TwoWay}" OnContent="" OffContent="" />
                 </StackPanel>
 
@@ -37,10 +38,15 @@
         <Border Grid.Row="1" Classes="tab-strip-container">
             <DockPanel LastChildFill="True">
                 <Button DockPanel.Dock="Left"
-                        Content="📊 Übersicht"
                         Command="{Binding SelectDashboardCommand}"
                         Classes="tab-item"
-                        Classes.selected="{Binding IsDashboardSelected}" />
+                        Classes.selected="{Binding IsDashboardSelected}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <Path Classes="icon"
+                              Data="M2,9 L5,9 L5,14 L2,14 Z M6.5,5 L9.5,5 L9.5,14 L6.5,14 Z M11,2 L14,2 L14,14 L11,14 Z" />
+                        <TextBlock Text="Übersicht" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
 
                 <ListBox DockPanel.Dock="Left"
                          Classes="tab-strip"
