@@ -7,9 +7,6 @@
         x:Name="Editor"
         Title="{Binding WindowTitle}"
         Width="440"
-        SizeToContent="Height"
-        CanResize="False"
-        WindowStartupLocation="CenterOwner"
         Classes="dialog">
     <StackPanel Classes="dialog-content">
         <TextBlock Text="{Binding WindowTitle}" Classes="dialog-title" />

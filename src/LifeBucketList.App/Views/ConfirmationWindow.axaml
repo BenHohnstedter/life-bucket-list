@@ -3,9 +3,6 @@
         x:Class="LifeBucketList.App.Views.ConfirmationWindow"
         x:Name="Root"
         Width="380"
-        SizeToContent="Height"
-        CanResize="False"
-        WindowStartupLocation="CenterOwner"
         Classes="dialog">
     <StackPanel Classes="dialog-content">
         <TextBlock Text="{Binding #Root.QuestionTitle}" Classes="dialog-title" />
