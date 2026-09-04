@@ -42,6 +42,51 @@
                     <SolidColorBrush x:Key="TextOnAccentBrush" Color="{StaticResource TextOnAccentColor}" />
                     <SolidColorBrush x:Key="DisabledTextBrush" Color="{StaticResource DisabledTextColor}" />
                     <SolidColorBrush x:Key="DisabledSurfaceBrush" Color="{StaticResource DisabledSurfaceColor}" />
+
+                    <!-- Re-skin stock FluentTheme controls (ComboBox popup, Calendar flyout, ToggleSwitch)
+                         so they match this custom palette instead of looking like unstyled default Fluent
+                         dropped into a custom shell. Key names verified against the installed
+                         Avalonia.Themes.Fluent 11.3.20 assembly. -->
+                    <Color x:Key="SystemAccentColor">#0A84FF</Color>
+                    <Color x:Key="SystemAccentColorLight1">#3A9DFF</Color>
+                    <Color x:Key="SystemAccentColorLight2">#6BB6FF</Color>
+                    <Color x:Key="SystemAccentColorLight3">#9CCFFF</Color>
+                    <Color x:Key="SystemAccentColorDark1">#0071E3</Color>
+                    <Color x:Key="SystemAccentColorDark2">#005BBF</Color>
+                    <Color x:Key="SystemAccentColorDark3">#00459A</Color>
+
+                    <SolidColorBrush x:Key="ComboBoxBackground" Color="{StaticResource SurfaceColor}" />
+                    <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="{StaticResource SurfaceColor}" />
+                    <SolidColorBrush x:Key="ComboBoxBackgroundPressed" Color="{StaticResource SurfaceColor}" />
+                    <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="{StaticResource BorderColor}" />
+                    <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="{StaticResource AccentColor}" />
+                    <SolidColorBrush x:Key="ComboBoxForeground" Color="{StaticResource TextPrimaryColor}" />
+                    <SolidColorBrush x:Key="ComboBoxPlaceHolderForeground" Color="{StaticResource TextSecondaryColor}" />
+                    <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="{StaticResource SurfaceColor}" />
+                    <SolidColorBrush x:Key="ComboBoxDropDownBorderBrush" Color="{StaticResource BorderColor}" />
+                    <SolidColorBrush x:Key="ComboBoxItemBackground" Color="Transparent" />
+                    <SolidColorBrush x:Key="ComboBoxItemBackgroundPointerOver" Color="{StaticResource ControlHoverColor}" />
+                    <SolidColorBrush x:Key="ComboBoxItemBackgroundSelected" Color="{StaticResource ControlHoverColor}" />
+                    <SolidColorBrush x:Key="ComboBoxItemBackgroundSelectedPointerOver" Color="{StaticResource ControlHoverColor}" />
+                    <SolidColorBrush x:Key="ComboBoxItemForeground" Color="{StaticResource TextPrimaryColor}" />
+
+                    <SolidColorBrush x:Key="CalendarViewBackground" Color="{StaticResource SurfaceColor}" />
+                    <SolidColorBrush x:Key="CalendarViewBorderBrush" Color="{StaticResource BorderColor}" />
+                    <SolidColorBrush x:Key="CalendarViewForeground" Color="{StaticResource TextPrimaryColor}" />
+                    <SolidColorBrush x:Key="CalendarViewCalendarItemForeground" Color="{StaticResource TextPrimaryColor}" />
+                    <SolidColorBrush x:Key="CalendarViewSelectedBorderBrush" Color="{StaticResource AccentColor}" />
+                    <SolidColorBrush x:Key="CalendarViewSelectedHoverBorderBrush" Color="{StaticResource AccentColor}" />
+                    <SolidColorBrush x:Key="CalendarViewPressedBorderBrush" Color="{StaticResource AccentColor}" />
+                    <SolidColorBrush x:Key="CalendarViewHoverBorderBrush" Color="{StaticResource ControlHoverColor}" />
+                    <SolidColorBrush x:Key="CalendarViewTodayForeground" Color="{StaticResource AccentColor}" />
+                    <SolidColorBrush x:Key="CalendarViewOutOfScopeForeground" Color="{StaticResource TextSecondaryColor}" />
+                    <SolidColorBrush x:Key="DatePickerFlyoutPresenterBackground" Color="{StaticResource SurfaceColor}" />
+                    <SolidColorBrush x:Key="DatePickerFlyoutPresenterBorderBrush" Color="{StaticResource BorderColor}" />
+
+                    <SolidColorBrush x:Key="ToggleSwitchFillOn" Color="{StaticResource AccentColor}" />
+                    <SolidColorBrush x:Key="ToggleSwitchFillOnPointerOver" Color="{StaticResource AccentHoverColor}" />
+                    <SolidColorBrush x:Key="ToggleSwitchStrokeOn" Color="{StaticResource AccentColor}" />
+                    <SolidColorBrush x:Key="ToggleSwitchKnobFillOn" Color="{StaticResource TextOnAccentColor}" />
                 </ResourceDictionary>
 
                 <ResourceDictionary x:Key="Dark">
@@ -83,6 +128,47 @@
                     <SolidColorBrush x:Key="TextOnAccentBrush" Color="{StaticResource TextOnAccentColor}" />
                     <SolidColorBrush x:Key="DisabledTextBrush" Color="{StaticResource DisabledTextColor}" />
                     <SolidColorBrush x:Key="DisabledSurfaceBrush" Color="{StaticResource DisabledSurfaceColor}" />
+
+                    <Color x:Key="SystemAccentColor">#0A84FF</Color>
+                    <Color x:Key="SystemAccentColorLight1">#409CFF</Color>
+                    <Color x:Key="SystemAccentColorLight2">#6AB4FF</Color>
+                    <Color x:Key="SystemAccentColorLight3">#94CCFF</Color>
+                    <Color x:Key="SystemAccentColorDark1">#0071E3</Color>
+                    <Color x:Key="SystemAccentColorDark2">#005BBF</Color>
+                    <Color x:Key="SystemAccentColorDark3">#00459A</Color>
+
+                    <SolidColorBrush x:Key="ComboBoxBackground" Color="{StaticResource SurfaceColor}" />
+                    <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="{StaticResource SurfaceColor}" />
+                    <SolidColorBrush x:Key="ComboBoxBackgroundPressed" Color="{StaticResource SurfaceColor}" />
+                    <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="{StaticResource BorderColor}" />
+                    <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="{StaticResource AccentColor}" />
+                    <SolidColorBrush x:Key="ComboBoxForeground" Color="{StaticResource TextPrimaryColor}" />
+                    <SolidColorBrush x:Key="ComboBoxPlaceHolderForeground" Color="{StaticResource TextSecondaryColor}" />
+                    <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="{StaticResource SurfaceColor}" />
+                    <SolidColorBrush x:Key="ComboBoxDropDownBorderBrush" Color="{StaticResource BorderColor}" />
+                    <SolidColorBrush x:Key="ComboBoxItemBackground" Color="Transparent" />
+                    <SolidColorBrush x:Key="ComboBoxItemBackgroundPointerOver" Color="{StaticResource ControlHoverColor}" />
+                    <SolidColorBrush x:Key="ComboBoxItemBackgroundSelected" Color="{StaticResource ControlHoverColor}" />
+                    <SolidColorBrush x:Key="ComboBoxItemBackgroundSelectedPointerOver" Color="{StaticResource ControlHoverColor}" />
+                    <SolidColorBrush x:Key="ComboBoxItemForeground" Color="{StaticResource TextPrimaryColor}" />
+
+                    <SolidColorBrush x:Key="CalendarViewBackground" Color="{StaticResource SurfaceColor}" />
+                    <SolidColorBrush x:Key="CalendarViewBorderBrush" Color="{StaticResource BorderColor}" />
+                    <SolidColorBrush x:Key="CalendarViewForeground" Color="{StaticResource TextPrimaryColor}" />
+                    <SolidColorBrush x:Key="CalendarViewCalendarItemForeground" Color="{StaticResource TextPrimaryColor}" />
+                    <SolidColorBrush x:Key="CalendarViewSelectedBorderBrush" Color="{StaticResource AccentColor}" />
+                    <SolidColorBrush x:Key="CalendarViewSelectedHoverBorderBrush" Color="{StaticResource AccentColor}" />
+                    <SolidColorBrush x:Key="CalendarViewPressedBorderBrush" Color="{StaticResource AccentColor}" />
+                    <SolidColorBrush x:Key="CalendarViewHoverBorderBrush" Color="{StaticResource ControlHoverColor}" />
+                    <SolidColorBrush x:Key="CalendarViewTodayForeground" Color="{StaticResource AccentColor}" />
+                    <SolidColorBrush x:Key="CalendarViewOutOfScopeForeground" Color="{StaticResource TextSecondaryColor}" />
+                    <SolidColorBrush x:Key="DatePickerFlyoutPresenterBackground" Color="{StaticResource SurfaceColor}" />
+                    <SolidColorBrush x:Key="DatePickerFlyoutPresenterBorderBrush" Color="{StaticResource BorderColor}" />
+
+                    <SolidColorBrush x:Key="ToggleSwitchFillOn" Color="{StaticResource AccentColor}" />
+                    <SolidColorBrush x:Key="ToggleSwitchFillOnPointerOver" Color="{StaticResource AccentHoverColor}" />
+                    <SolidColorBrush x:Key="ToggleSwitchStrokeOn" Color="{StaticResource AccentColor}" />
+                    <SolidColorBrush x:Key="ToggleSwitchKnobFillOn" Color="{StaticResource TextOnAccentColor}" />
                 </ResourceDictionary>
 
             </ResourceDictionary.ThemeDictionaries>

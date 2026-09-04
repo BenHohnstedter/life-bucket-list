@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
 using Avalonia.VisualTree;
 using LifeBucketList.App.Controls;
@@ -69,5 +70,23 @@ public class GermanDatePickerTests
         var calendar = window.GetVisualDescendants().OfType<Calendar>().Single();
 
         Assert.Equal(new DateTime(2030, 7, 4), calendar.SelectedDate);
+    }
+
+    /// <summary>Visual-regression check for the re-skinned Fluent Calendar flyout (Theme.axaml's
+    /// CalendarView* resource overrides) — renders the actual flyout, not just asserts it exists.</summary>
+    [AvaloniaFact]
+    public void CalendarFlyout_RendersWithReskinnedFluentChrome()
+    {
+        var picker = new GermanDatePicker { SelectedDate = new DateTimeOffset(new DateTime(2024, 6, 15)) };
+        var window = new Window { Width = 320, Height = 360, Content = picker };
+        window.Show();
+
+        var button = picker.GetVisualDescendants().OfType<Button>().Single();
+        button.Flyout!.ShowAt(button);
+        window.UpdateLayout();
+
+        var outputDir = Path.Combine(Path.GetTempPath(), "lbl-test-renders");
+        Directory.CreateDirectory(outputDir);
+        window.CaptureRenderedFrame()?.Save(Path.Combine(outputDir, "calendar-flyout-reskinned.png"));
     }
 }
