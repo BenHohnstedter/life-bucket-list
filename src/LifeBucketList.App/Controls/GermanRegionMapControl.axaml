@@ -1,0 +1,20 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="LifeBucketList.App.Controls.GermanRegionMapControl">
+    <UserControl.Styles>
+        <Style Selector="Path.region-shape">
+            <Setter Property="Fill" Value="{DynamicResource AppBackgroundBrush}" />
+            <Setter Property="Stroke" Value="{DynamicResource BorderBrush1}" />
+            <Setter Property="StrokeThickness" Value="0.75" />
+        </Style>
+        <Style Selector="Path.region-shape.visited">
+            <Setter Property="Fill" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Stroke" Value="{DynamicResource AccentBrush}" />
+        </Style>
+    </UserControl.Styles>
+    <Border Classes="world-map-frame">
+        <Viewbox Stretch="Uniform">
+            <Canvas x:Name="RegionMapCanvas" ClipToBounds="False" />
+        </Viewbox>
+    </Border>
+</UserControl>

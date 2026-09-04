@@ -59,7 +59,9 @@ public static class WorldMapGeometryProvider
         return string.IsNullOrWhiteSpace(value) || value == "-99" ? null : value;
     }
 
-    private static StreamGeometry? BuildGeometry(JsonElement geometryElement)
+    /// <summary>Generic GeoJSON Polygon/MultiPolygon -> StreamGeometry projection, reused as-is by
+    /// <see cref="GermanRegionGeometryProvider"/> — nothing about it is world-map-specific.</summary>
+    internal static StreamGeometry? BuildGeometry(JsonElement geometryElement)
     {
         var type = geometryElement.GetProperty("type").GetString();
         var coordinates = geometryElement.GetProperty("coordinates");
@@ -109,7 +111,12 @@ public static class WorldMapGeometryProvider
         return Project(longitude: values[0].GetDouble(), latitude: values[1].GetDouble());
     }
 
-    private static Point Project(double longitude, double latitude) => new(
+    /// <summary>Exposed internally so <see cref="GermanRegionGeometryProvider"/> can project the
+    /// Konzerte map's German-state shapes into this exact same coordinate space — that's what lets it
+    /// re-key Austria/Switzerland straight out of <see cref="ShapesByIsoCode"/> and have them align
+    /// pixel-for-pixel with the freshly-built state shapes, instead of needing a second bundled dataset
+    /// for those two countries.</summary>
+    internal static Point Project(double longitude, double latitude) => new(
         (longitude + 180) / 360 * CanvasWidth,
         (90 - latitude) / 180 * CanvasHeight);
 }
