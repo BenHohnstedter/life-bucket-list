@@ -63,6 +63,34 @@ public class SqliteEntryRepositoryTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task AddAsync_ThenGetAllAsync_RoundTripsKonzerteFields()
+    {
+        var entry = MakeEntry("Peter Fox");
+        entry.Venue = "Waldbühne Berlin";
+        entry.RegionCode = "DE-BE";
+        entry.IsFestival = false;
+
+        await _entries.AddAsync(entry);
+        var loaded = Assert.Single(await _entries.GetAllAsync());
+
+        Assert.Equal("Waldbühne Berlin", loaded.Venue);
+        Assert.Equal("DE-BE", loaded.RegionCode);
+        Assert.Equal(false, loaded.IsFestival);
+    }
+
+    [Fact]
+    public async Task AddAsync_RoundTripsIsFestivalTrue()
+    {
+        var entry = MakeEntry("Wacken Open Air");
+        entry.IsFestival = true;
+
+        await _entries.AddAsync(entry);
+        var loaded = Assert.Single(await _entries.GetAllAsync());
+
+        Assert.Equal(true, loaded.IsFestival);
+    }
+
+    [Fact]
     public async Task AddAsync_AllowsNullOptionalFields()
     {
         var entry = MakeEntry();
@@ -76,6 +104,9 @@ public class SqliteEntryRepositoryTests : IAsyncLifetime
         Assert.Null(loaded.OccurredOn);
         Assert.Null(loaded.Rating);
         Assert.Null(loaded.Note);
+        Assert.Null(loaded.Venue);
+        Assert.Null(loaded.RegionCode);
+        Assert.Null(loaded.IsFestival);
     }
 
     [Fact]

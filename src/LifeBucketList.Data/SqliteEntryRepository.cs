@@ -21,7 +21,11 @@ public sealed class SqliteEntryRepository : IEntryRepository
         using var connection = _connectionFactory.OpenConnection();
         var command = connection.CreateCommand();
         command.CommandText =
-            "SELECT Id, CategoryId, Title, OccurredOn, Rating, Note, CoverImageUrl, CountryCode, CreatedAt, UpdatedAt FROM Entries ORDER BY CreatedAt";
+            """
+            SELECT Id, CategoryId, Title, OccurredOn, Rating, Note, CoverImageUrl, CountryCode,
+                   Venue, RegionCode, IsFestival, CreatedAt, UpdatedAt
+            FROM Entries ORDER BY CreatedAt
+            """;
 
         var entries = new List<Entry>();
         using var reader = await command.ExecuteReaderAsync();
@@ -39,8 +43,10 @@ public sealed class SqliteEntryRepository : IEntryRepository
         var command = connection.CreateCommand();
         command.CommandText =
             """
-            INSERT INTO Entries (Id, CategoryId, Title, OccurredOn, Rating, Note, CoverImageUrl, CountryCode, CreatedAt, UpdatedAt)
-            VALUES ($id, $categoryId, $title, $occurredOn, $rating, $note, $coverImageUrl, $countryCode, $createdAt, $updatedAt)
+            INSERT INTO Entries (Id, CategoryId, Title, OccurredOn, Rating, Note, CoverImageUrl, CountryCode,
+                                  Venue, RegionCode, IsFestival, CreatedAt, UpdatedAt)
+            VALUES ($id, $categoryId, $title, $occurredOn, $rating, $note, $coverImageUrl, $countryCode,
+                    $venue, $regionCode, $isFestival, $createdAt, $updatedAt)
             """;
         BindParameters(command, entry);
         await command.ExecuteNonQueryAsync();
@@ -55,6 +61,7 @@ public sealed class SqliteEntryRepository : IEntryRepository
             UPDATE Entries
             SET CategoryId = $categoryId, Title = $title, OccurredOn = $occurredOn,
                 Rating = $rating, Note = $note, CoverImageUrl = $coverImageUrl, CountryCode = $countryCode,
+                Venue = $venue, RegionCode = $regionCode, IsFestival = $isFestival,
                 UpdatedAt = $updatedAt
             WHERE Id = $id
             """;
@@ -81,6 +88,9 @@ public sealed class SqliteEntryRepository : IEntryRepository
         command.Parameters.AddWithValue("$note", (object?)entry.Note ?? DBNull.Value);
         command.Parameters.AddWithValue("$coverImageUrl", (object?)entry.CoverImageUrl ?? DBNull.Value);
         command.Parameters.AddWithValue("$countryCode", (object?)entry.CountryCode ?? DBNull.Value);
+        command.Parameters.AddWithValue("$venue", (object?)entry.Venue ?? DBNull.Value);
+        command.Parameters.AddWithValue("$regionCode", (object?)entry.RegionCode ?? DBNull.Value);
+        command.Parameters.AddWithValue("$isFestival", (object?)entry.IsFestival ?? DBNull.Value);
         command.Parameters.AddWithValue("$createdAt", entry.CreatedAt.ToString("o", CultureInfo.InvariantCulture));
         command.Parameters.AddWithValue("$updatedAt", entry.UpdatedAt.ToString("o", CultureInfo.InvariantCulture));
     }
@@ -95,7 +105,10 @@ public sealed class SqliteEntryRepository : IEntryRepository
         Note = reader.IsDBNull(5) ? null : reader.GetString(5),
         CoverImageUrl = reader.IsDBNull(6) ? null : reader.GetString(6),
         CountryCode = reader.IsDBNull(7) ? null : reader.GetString(7),
-        CreatedAt = DateTimeOffset.ParseExact(reader.GetString(8), "o", CultureInfo.InvariantCulture),
-        UpdatedAt = DateTimeOffset.ParseExact(reader.GetString(9), "o", CultureInfo.InvariantCulture),
+        Venue = reader.IsDBNull(8) ? null : reader.GetString(8),
+        RegionCode = reader.IsDBNull(9) ? null : reader.GetString(9),
+        IsFestival = reader.IsDBNull(10) ? null : reader.GetBoolean(10),
+        CreatedAt = DateTimeOffset.ParseExact(reader.GetString(11), "o", CultureInfo.InvariantCulture),
+        UpdatedAt = DateTimeOffset.ParseExact(reader.GetString(12), "o", CultureInfo.InvariantCulture),
     };
 }

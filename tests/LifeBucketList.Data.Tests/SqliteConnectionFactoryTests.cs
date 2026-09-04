@@ -108,6 +108,40 @@ public class SqliteConnectionFactoryTests : IDisposable
     }
 
     [Fact]
+    public async Task InitializeAsync_AddsNewlyIntroducedFixedCategory_ToAnExistingDatabaseMissingIt()
+    {
+        // Simulate a database created by an earlier app version that only had the original 5 fixed
+        // categories (i.e. before "Konzerte" was added) — the table is non-empty, so the old
+        // "seed only if empty" logic would never have added the new category.
+        var oldNames = DefaultCategories.Names.Where(n => n != DefaultCategories.Concerts).ToArray();
+        using (var connection = new SqliteConnection(new SqliteConnectionStringBuilder { DataSource = _dbPath }.ToString()))
+        {
+            connection.Open();
+            var setup = connection.CreateCommand();
+            setup.CommandText = "CREATE TABLE Categories (Id TEXT PRIMARY KEY, Name TEXT NOT NULL, SortOrder INTEGER NOT NULL)";
+            setup.ExecuteNonQuery();
+
+            for (var i = 0; i < oldNames.Length; i++)
+            {
+                var insert = connection.CreateCommand();
+                insert.CommandText = "INSERT INTO Categories (Id, Name, SortOrder) VALUES ($id, $name, $sortOrder)";
+                insert.Parameters.AddWithValue("$id", Guid.NewGuid().ToString());
+                insert.Parameters.AddWithValue("$name", oldNames[i]);
+                insert.Parameters.AddWithValue("$sortOrder", i);
+                insert.ExecuteNonQuery();
+            }
+        }
+        SqliteConnection.ClearAllPools();
+
+        var factory = new SqliteConnectionFactory(_dbPath);
+        await factory.InitializeAsync();
+
+        var categories = await new SqliteCategoryRepository(factory).GetAllAsync();
+        Assert.Equal(DefaultCategories.Names, categories.OrderBy(c => c.SortOrder).Select(c => c.Name));
+        Assert.Contains(categories, c => c.Name == DefaultCategories.Concerts);
+    }
+
+    [Fact]
     public async Task InitializeAsync_RemovesLeftoverCustomCategory_AndItsEntries_KeepingFixedCategoriesIntact()
     {
         var factory = new SqliteConnectionFactory(_dbPath);
