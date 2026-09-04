@@ -42,6 +42,8 @@ public class ApiKeyProviderTests : IDisposable
         Assert.Null(provider.GetTmdbApiKey());
         Assert.Null(provider.GetIgdbClientId());
         Assert.Null(provider.GetIgdbClientSecret());
+        Assert.Null(provider.GetSpotifyClientId());
+        Assert.Null(provider.GetSpotifyClientSecret());
     }
 
     [Fact]
@@ -53,6 +55,16 @@ public class ApiKeyProviderTests : IDisposable
         Assert.Equal("file-tmdb-key", provider.GetTmdbApiKey());
         Assert.Equal("file-id", provider.GetIgdbClientId());
         Assert.Equal("file-secret", provider.GetIgdbClientSecret());
+    }
+
+    [Fact]
+    public void GetSpotifyClientId_ReadsFromJsonFile_WhenNothingElseIsSet()
+    {
+        File.WriteAllText(_keysFilePath, """{ "SpotifyClientId": "file-spotify-id", "SpotifyClientSecret": "file-spotify-secret" }""");
+        var provider = CreateProvider();
+
+        Assert.Equal("file-spotify-id", provider.GetSpotifyClientId());
+        Assert.Equal("file-spotify-secret", provider.GetSpotifyClientSecret());
     }
 
     [Fact]

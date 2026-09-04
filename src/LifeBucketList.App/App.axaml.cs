@@ -78,7 +78,11 @@ public partial class App : Application
         services.AddSingleton<IApiKeyProvider>(_ => new ApiKeyProvider(ApiKeyProvider.GetDefaultFilePath(), AppContext.BaseDirectory));
         services.AddSingleton<ITwitchTokenProvider>(sp =>
             new TwitchTokenProvider(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<IApiKeyProvider>()));
-        services.AddSingleton<ICoverSearchService, TmdbIgdbCoverSearchService>();
+        services.AddSingleton<ISpotifyTokenProvider>(sp =>
+            new SpotifyTokenProvider(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<IApiKeyProvider>()));
+        services.AddSingleton<TmdbIgdbCoverSearchService>();
+        services.AddSingleton<SpotifyCoverSearchService>();
+        services.AddSingleton<ICoverSearchService, CompositeCoverSearchService>();
         services.AddSingleton<ICoverImageCache>(sp =>
             new CoverImageCache(sp.GetRequiredService<HttpClient>(), CoverImageCache.GetDefaultCacheDirectory()));
 

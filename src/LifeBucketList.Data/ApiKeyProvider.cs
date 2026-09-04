@@ -11,10 +11,14 @@ public sealed class ApiKeyProvider : IApiKeyProvider
     private const string TmdbEnvironmentVariable = "LBL_TMDB_API_KEY";
     private const string IgdbClientIdEnvironmentVariable = "LBL_IGDB_CLIENT_ID";
     private const string IgdbClientSecretEnvironmentVariable = "LBL_IGDB_CLIENT_SECRET";
+    private const string SpotifyClientIdEnvironmentVariable = "LBL_SPOTIFY_CLIENT_ID";
+    private const string SpotifyClientSecretEnvironmentVariable = "LBL_SPOTIFY_CLIENT_SECRET";
 
     private const string TmdbFileKey = "TmdbApiKey";
     private const string IgdbClientIdFileKey = "IgdbClientId";
     private const string IgdbClientSecretFileKey = "IgdbClientSecret";
+    private const string SpotifyClientIdFileKey = "SpotifyClientId";
+    private const string SpotifyClientSecretFileKey = "SpotifyClientSecret";
 
     private readonly Lazy<IReadOnlyDictionary<string, string>> _dotEnvValues;
     private readonly Lazy<IReadOnlyDictionary<string, string>> _jsonFileValues;
@@ -37,6 +41,10 @@ public sealed class ApiKeyProvider : IApiKeyProvider
     public string? GetIgdbClientId() => Resolve(IgdbClientIdEnvironmentVariable, IgdbClientIdFileKey);
 
     public string? GetIgdbClientSecret() => Resolve(IgdbClientSecretEnvironmentVariable, IgdbClientSecretFileKey);
+
+    public string? GetSpotifyClientId() => Resolve(SpotifyClientIdEnvironmentVariable, SpotifyClientIdFileKey);
+
+    public string? GetSpotifyClientSecret() => Resolve(SpotifyClientSecretEnvironmentVariable, SpotifyClientSecretFileKey);
 
     private string? Resolve(string environmentVariableName, string fileKeyName)
     {
