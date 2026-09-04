@@ -3,7 +3,7 @@
 
   <Package Name="Life Bucket List"
            Manufacturer="Life Bucket List"
-           Version="1.6.0"
+           Version="1.7.0"
            UpgradeCode="6db0d7bb-9cd8-440f-b5d6-61bc7558ffa4"
            Language="1031"
            Scope="perUserOrMachine">
