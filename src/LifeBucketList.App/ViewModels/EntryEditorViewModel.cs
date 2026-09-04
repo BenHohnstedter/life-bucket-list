@@ -27,6 +27,7 @@ public partial class EntryEditorViewModel : ViewModelBase
     [NotifyPropertyChangedFor(nameof(TitlePlaceholder))]
     [NotifyPropertyChangedFor(nameof(ShowCoverSearch))]
     [NotifyPropertyChangedFor(nameof(ShowCountryPicker))]
+    [NotifyPropertyChangedFor(nameof(ShowRegionPicker))]
     private Category? _selectedCategory;
 
     [ObservableProperty]
@@ -53,12 +54,26 @@ public partial class EntryEditorViewModel : ViewModelBase
     [ObservableProperty]
     private CountryInfo? _selectedCountry;
 
+    [ObservableProperty]
+    private GermanRegionInfo? _selectedRegion;
+
+    [ObservableProperty]
+    private string? _venue;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowCoverSearch))]
+    [NotifyPropertyChangedFor(nameof(TitlePlaceholder))]
+    private bool _isFestivalMode;
+
     public ObservableCollection<MediaSearchResultItem> CoverSearchResults { get; } = new();
 
     public IReadOnlyList<Category> AvailableCategories { get; }
 
     public IReadOnlyList<CountryInfo> AvailableCountries { get; } =
         WorldCountries.All.OrderBy(c => c.Name, GermanNameComparer).ToList();
+
+    public IReadOnlyList<GermanRegionInfo> AvailableRegions { get; } =
+        GermanRegions.All.OrderBy(r => r.Name, GermanNameComparer).ToList();
 
     public string WindowTitle { get; }
 
@@ -70,15 +85,22 @@ public partial class EntryEditorViewModel : ViewModelBase
         DefaultCategories.VideoGames => "z. B. The Legend of Zelda",
         DefaultCategories.Destinations => "z. B. Kyoto, Japan",
         DefaultCategories.Activities => "z. B. Bungee Jumping",
+        DefaultCategories.Concerts when IsFestivalMode => "z. B. Rock am Ring",
+        DefaultCategories.Concerts => "z. B. Peter Fox",
         _ => "Titel eingeben…",
     };
 
-    /// <summary>Cover search only makes sense for categories backed by a media database.</summary>
+    /// <summary>Cover search only makes sense for categories backed by a media database — and for
+    /// Konzerte, only in artist mode, since a festival has no single performer to search Spotify for.</summary>
     public bool ShowCoverSearch => SelectedCategory is not null &&
-        DefaultCategories.CoverSearchEnabledCategories.Contains(SelectedCategory.Name);
+        DefaultCategories.CoverSearchEnabledCategories.Contains(SelectedCategory.Name) &&
+        !(SelectedCategory.Name == DefaultCategories.Concerts && IsFestivalMode);
 
     /// <summary>The country picker (for the world map) only applies to Reiseziele.</summary>
     public bool ShowCountryPicker => SelectedCategory?.Name == DefaultCategories.Destinations;
+
+    /// <summary>The Bundesland/DACH region picker (for the Konzerte map) only applies to Konzerte.</summary>
+    public bool ShowRegionPicker => SelectedCategory?.Name == DefaultCategories.Concerts;
 
     public EntryEditorViewModel(
         IReadOnlyList<Category> availableCategories,
@@ -107,6 +129,9 @@ public partial class EntryEditorViewModel : ViewModelBase
         Note = existingEntry.Note;
         CoverImageUrl = existingEntry.CoverImageUrl;
         SelectedCountry = WorldCountries.FindByCode(existingEntry.CountryCode);
+        SelectedRegion = GermanRegions.FindByCode(existingEntry.RegionCode);
+        Venue = existingEntry.Venue;
+        IsFestivalMode = existingEntry.IsFestival ?? false;
 
         if (CoverImageUrl is not null)
         {
@@ -117,6 +142,8 @@ public partial class EntryEditorViewModel : ViewModelBase
     partial void OnTitleChanged(string value) => ScheduleDebouncedSearch();
 
     partial void OnSelectedCategoryChanged(Category? value) => ScheduleDebouncedSearch();
+
+    partial void OnIsFestivalModeChanged(bool value) => ScheduleDebouncedSearch();
 
     /// <summary>Manual "Cover suchen" button: searches immediately, without waiting for the debounce.</summary>
     [RelayCommand]
@@ -237,6 +264,7 @@ public partial class EntryEditorViewModel : ViewModelBase
         DefaultCategories.Movies => MediaKind.Movie,
         DefaultCategories.Series => MediaKind.Series,
         DefaultCategories.VideoGames => MediaKind.VideoGame,
+        DefaultCategories.Concerts => MediaKind.Artist,
         _ => null,
     };
 }

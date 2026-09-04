@@ -393,11 +393,78 @@ public class MainWindowViewModelTests : IAsyncLifetime
         Assert.Contains("JP", _viewModel.VisitedCountryCodes);
     }
 
+    [AvaloniaFact]
+    public async Task AddConcertEntry_WithRegion_AddsToVisitedRegionCodes()
+    {
+        await AddConcertEntry("Peter Fox", "DE-BE");
+
+        Assert.Contains("DE-BE", _viewModel.VisitedRegionCodes);
+    }
+
+    [AvaloniaFact]
+    public async Task AddConcertEntry_WithoutRegion_DoesNotAffectVisitedRegionCodes()
+    {
+        _dialogService.EntryEditorHandler = editor =>
+        {
+            editor.Title = "Unbestimmtes Konzert";
+            editor.SelectedCategory = _viewModel.Categories.Single(c => c.Name == DefaultCategories.Concerts);
+            return true;
+        };
+        await _viewModel.AddEntryCommand.ExecuteAsync(null);
+
+        Assert.Empty(_viewModel.VisitedRegionCodes);
+    }
+
+    [AvaloniaFact]
+    public async Task AddEntry_InNonConcertsCategory_NeverAppearsOnRegionMap_EvenIfRegionSomehowSet()
+    {
+        _dialogService.EntryEditorHandler = editor =>
+        {
+            editor.Title = "Inception";
+            editor.SelectedCategory = _viewModel.Categories.Single(c => c.Name == DefaultCategories.Movies);
+            editor.SelectedRegion = GermanRegions.FindByCode("DE-BE");
+            return true;
+        };
+        await _viewModel.AddEntryCommand.ExecuteAsync(null);
+
+        Assert.Empty(_viewModel.VisitedRegionCodes);
+    }
+
+    [AvaloniaFact]
+    public async Task AddConcertEntry_PersistsVenueAndFestivalMode()
+    {
+        _dialogService.EntryEditorHandler = editor =>
+        {
+            editor.Title = "Wacken Open Air";
+            editor.SelectedCategory = _viewModel.Categories.Single(c => c.Name == DefaultCategories.Concerts);
+            editor.SelectedRegion = GermanRegions.FindByCode("DE-SH");
+            editor.Venue = "Wacken";
+            editor.IsFestivalMode = true;
+            return true;
+        };
+        await _viewModel.AddEntryCommand.ExecuteAsync(null);
+
+        var entry = FindConcertEntryByTitle("Wacken Open Air");
+        Assert.Equal("Wacken", entry.Venue);
+        Assert.Equal("DE-SH", entry.RegionCode);
+        Assert.Equal(true, entry.IsFestival);
+    }
+
     private Entry FindEntryByTitle(string title)
     {
         var wasSelected = _viewModel.SelectedCategory;
         var destinations = _viewModel.Categories.Single(c => c.Name == DefaultCategories.Destinations);
         _viewModel.SelectedCategory = destinations;
+        var entry = _viewModel.DisplayedEntries.Single(e => e.Title == title).Source;
+        _viewModel.SelectedCategory = wasSelected;
+        return entry;
+    }
+
+    private Entry FindConcertEntryByTitle(string title)
+    {
+        var wasSelected = _viewModel.SelectedCategory;
+        var concerts = _viewModel.Categories.Single(c => c.Name == DefaultCategories.Concerts);
+        _viewModel.SelectedCategory = concerts;
         var entry = _viewModel.DisplayedEntries.Single(e => e.Title == title).Source;
         _viewModel.SelectedCategory = wasSelected;
         return entry;
@@ -410,6 +477,18 @@ public class MainWindowViewModelTests : IAsyncLifetime
             editor.Title = title;
             editor.SelectedCategory = _viewModel.Categories.Single(c => c.Name == DefaultCategories.Destinations);
             editor.SelectedCountry = WorldCountries.FindByCode(countryCode);
+            return true;
+        };
+        await _viewModel.AddEntryCommand.ExecuteAsync(null);
+    }
+
+    private async Task AddConcertEntry(string title, string regionCode)
+    {
+        _dialogService.EntryEditorHandler = editor =>
+        {
+            editor.Title = title;
+            editor.SelectedCategory = _viewModel.Categories.Single(c => c.Name == DefaultCategories.Concerts);
+            editor.SelectedRegion = GermanRegions.FindByCode(regionCode);
             return true;
         };
         await _viewModel.AddEntryCommand.ExecuteAsync(null);

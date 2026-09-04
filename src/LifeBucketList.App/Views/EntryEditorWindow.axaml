@@ -32,6 +32,24 @@
                       HorizontalAlignment="Stretch" />
         </StackPanel>
 
+        <StackPanel Classes="field" IsVisible="{Binding ShowRegionPicker}">
+            <TextBlock Text="Art" Classes="field-label" />
+            <ToggleSwitch IsChecked="{Binding IsFestivalMode, Mode=TwoWay}" OnContent="Festival" OffContent="Künstler" HorizontalAlignment="Left" />
+        </StackPanel>
+
+        <StackPanel Classes="field" IsVisible="{Binding ShowRegionPicker}">
+            <TextBlock Text="Ort/Venue" Classes="field-label" />
+            <TextBox Text="{Binding Venue, Mode=TwoWay}" Watermark="z. B. Waldbühne Berlin" />
+        </StackPanel>
+
+        <StackPanel Classes="field" IsVisible="{Binding ShowRegionPicker}">
+            <TextBlock Text="Region" Classes="field-label" />
+            <ComboBox ItemsSource="{Binding AvailableRegions}"
+                      SelectedItem="{Binding SelectedRegion, Mode=TwoWay}"
+                      DisplayMemberBinding="{Binding Name}"
+                      HorizontalAlignment="Stretch" />
+        </StackPanel>
+
         <StackPanel Classes="field" IsVisible="{Binding ShowCoverSearch}">
             <TextBlock Text="Cover" Classes="field-label" />
             <StackPanel Orientation="Horizontal" Spacing="10">

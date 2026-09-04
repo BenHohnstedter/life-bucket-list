@@ -170,4 +170,41 @@ public class EntryEditorWindowTests
 
         Assert.False(closed);
     }
+
+    [AvaloniaTheory]
+    [InlineData(DefaultCategories.Concerts, true)]
+    [InlineData(DefaultCategories.Movies, false)]
+    public void KonzerteFields_OnlyVisibleForConcerts(string categoryName, bool expectedVisible)
+    {
+        var category = new Category { Id = Guid.NewGuid(), Name = categoryName, SortOrder = 0 };
+        var editor = new EntryEditorViewModel(new[] { category }, existingEntry: null, category, new FakeCoverSearchService(), new FakeCoverImageCache());
+
+        var window = new EntryEditorWindow { DataContext = editor };
+        window.Show();
+
+        var regionLabel = window.GetVisualDescendants().OfType<TextBlock>().Single(t => t.Text == "Region");
+        var venueLabel = window.GetVisualDescendants().OfType<TextBlock>().Single(t => t.Text == "Ort/Venue");
+        Assert.Equal(expectedVisible, regionLabel.IsEffectivelyVisible);
+        Assert.Equal(expectedVisible, venueLabel.IsEffectivelyVisible);
+    }
+
+    [AvaloniaFact]
+    public void RenderForVisualReview_KonzerteFields()
+    {
+        var category = new Category { Id = Guid.NewGuid(), Name = DefaultCategories.Concerts, SortOrder = 0 };
+        var editor = new EntryEditorViewModel(new[] { category }, existingEntry: null, category, new FakeCoverSearchService(), new FakeCoverImageCache())
+        {
+            Title = "Peter Fox",
+            Venue = "Waldbühne Berlin",
+            SelectedRegion = GermanRegions.FindByCode("DE-BE"),
+        };
+
+        var window = new EntryEditorWindow { DataContext = editor };
+        window.Show();
+        window.UpdateLayout();
+
+        var outputDir = Path.Combine(Path.GetTempPath(), "lbl-test-renders");
+        Directory.CreateDirectory(outputDir);
+        window.CaptureRenderedFrame()?.Save(Path.Combine(outputDir, "entry-editor-konzerte.png"));
+    }
 }

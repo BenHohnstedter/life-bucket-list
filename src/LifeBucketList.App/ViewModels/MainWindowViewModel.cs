@@ -23,16 +23,21 @@ public partial class MainWindowViewModel : ViewModelBase
     public ObservableCollection<EntryListItem> DisplayedEntries { get; } = new();
     public ObservableCollection<CategoryStatRow> DashboardRows { get; } = new();
     public ObservableCollection<string> VisitedCountryCodes { get; } = new();
+    public ObservableCollection<string> VisitedRegionCodes { get; } = new();
 
     public IReadOnlyList<SortOptionItem> SortOptions => SortOptionItem.All;
     public IReadOnlyList<RatingFilterItem> RatingFilters => RatingFilterItem.All;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsDestinationsCategorySelected))]
+    [NotifyPropertyChangedFor(nameof(IsConcertsCategorySelected))]
     private Category? _selectedCategory;
 
     /// <summary>Whether the Reiseziele category is showing, so the world map can be displayed.</summary>
     public bool IsDestinationsCategorySelected => SelectedCategory?.Name == DefaultCategories.Destinations;
+
+    /// <summary>Whether the Konzerte category is showing, so the DACH region map can be displayed.</summary>
+    public bool IsConcertsCategorySelected => SelectedCategory?.Name == DefaultCategories.Concerts;
 
     [ObservableProperty]
     private string _searchText = string.Empty;
@@ -304,6 +309,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
         var categoryId = editor.SelectedCategory?.Id
             ?? throw new DomainValidationException("Bitte wähle eine Kategorie aus.");
+        var isConcerts = editor.SelectedCategory?.Name == DefaultCategories.Concerts;
 
         return new Entry
         {
@@ -315,6 +321,9 @@ public partial class MainWindowViewModel : ViewModelBase
             Note = note,
             CoverImageUrl = editor.CoverImageUrl,
             CountryCode = editor.SelectedCountry?.Code,
+            Venue = isConcerts ? editor.Venue : null,
+            RegionCode = isConcerts ? editor.SelectedRegion?.Code : null,
+            IsFestival = isConcerts ? editor.IsFestivalMode : null,
             CreatedAt = createdAt,
             UpdatedAt = DateTimeOffset.UtcNow,
         };
@@ -359,6 +368,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
 
         RefreshVisitedCountries();
+        RefreshVisitedRegions();
     }
 
     /// <summary>Recomputes which countries to highlight on the Reiseziele map, from all entries in
@@ -381,6 +391,29 @@ public partial class MainWindowViewModel : ViewModelBase
         foreach (var code in codes)
         {
             VisitedCountryCodes.Add(code);
+        }
+    }
+
+    /// <summary>Recomputes which German/DACH regions to highlight on the Konzerte map, from all
+    /// entries in that category regardless of the current search/filter.</summary>
+    private void RefreshVisitedRegions()
+    {
+        VisitedRegionCodes.Clear();
+
+        var concertsCategoryId = Categories.FirstOrDefault(c => c.Name == DefaultCategories.Concerts)?.Id;
+        if (concertsCategoryId is null)
+        {
+            return;
+        }
+
+        var codes = _allEntries
+            .Where(e => e.CategoryId == concertsCategoryId && e.RegionCode is not null)
+            .Select(e => e.RegionCode!)
+            .Distinct(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var code in codes)
+        {
+            VisitedRegionCodes.Add(code);
         }
     }
 }

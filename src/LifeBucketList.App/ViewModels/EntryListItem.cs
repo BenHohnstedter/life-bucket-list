@@ -14,18 +14,20 @@ public sealed partial class EntryListItem : ObservableObject
     public string DateText { get; }
     public int RatingValue { get; }
     public string? Note { get; }
+    public string? Venue { get; }
     public bool HasCover { get; }
 
     [ObservableProperty]
     private Bitmap? _coverBitmap;
 
-    private EntryListItem(Entry source, string title, string dateText, int ratingValue, string? note)
+    private EntryListItem(Entry source, string title, string dateText, int ratingValue, string? note, string? venue)
     {
         Source = source;
         Title = title;
         DateText = dateText;
         RatingValue = ratingValue;
         Note = note;
+        Venue = venue;
         HasCover = source.CoverImageUrl is not null;
     }
 
@@ -34,7 +36,8 @@ public sealed partial class EntryListItem : ObservableObject
         entry.Title,
         entry.OccurredOn is { } date ? date.ToString("dd.MM.yyyy") : "Kein Datum",
         entry.Rating ?? 0,
-        entry.Note);
+        entry.Note,
+        entry.Venue);
 
     /// <summary>Fire-and-forget from the caller; never throws (the cache itself swallows failures).</summary>
     public async Task LoadCoverAsync(ICoverImageCache coverImageCache)

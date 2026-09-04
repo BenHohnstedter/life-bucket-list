@@ -114,6 +114,34 @@ public class MainWindowSmokeTests : IAsyncLifetime
         SaveRenderForReview(window, "main-window-reiseziele-with-map.png");
     }
 
+    [AvaloniaFact]
+    public async Task MainWindow_KonzerteTabSelected_ShowsRegionMap()
+    {
+        _dialogService.EntryEditorHandler = editor =>
+        {
+            editor.Title = "Peter Fox";
+            editor.SelectedCategory = _viewModel.Categories.Single(c => c.Name == LifeBucketList.Domain.Models.DefaultCategories.Concerts);
+            editor.Venue = "Waldbühne Berlin";
+            editor.SelectedRegion = LifeBucketList.Domain.Models.GermanRegions.FindByCode("DE-BE");
+            return true;
+        };
+        await _viewModel.AddEntryCommand.ExecuteAsync(null);
+
+        _viewModel.SelectedCategory = _viewModel.Categories.Single(c => c.Name == LifeBucketList.Domain.Models.DefaultCategories.Concerts);
+
+        var window = new MainWindow { DataContext = _viewModel };
+        window.Show();
+
+        Assert.True(_viewModel.IsConcertsCategorySelected);
+        var map = window.GetVisualDescendants().OfType<LifeBucketList.App.Controls.GermanRegionMapControl>().Single();
+        Assert.True(map.IsEffectivelyVisible);
+
+        var venueText = window.GetVisualDescendants().OfType<TextBlock>().Select(t => t.Text).ToList();
+        Assert.Contains("Waldbühne Berlin", venueText);
+
+        SaveRenderForReview(window, "main-window-konzerte-with-map.png");
+    }
+
     private static void SaveRenderForReview(Window window, string fileName)
     {
         var frame = window.CaptureRenderedFrame();

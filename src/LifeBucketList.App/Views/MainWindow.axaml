@@ -97,6 +97,11 @@
                                                    HighlightedCountryCodes="{Binding VisitedCountryCodes}"
                                                    IsVisible="{Binding IsDestinationsCategorySelected}" />
 
+                        <controls:GermanRegionMapControl Height="320"
+                                                          Margin="0,0,0,12"
+                                                          HighlightedRegionCodes="{Binding VisitedRegionCodes}"
+                                                          IsVisible="{Binding IsConcertsCategorySelected}" />
+
                         <TextBlock Text="Noch keine Einträge in dieser Kategorie."
                                    Classes="empty-hint"
                                    IsVisible="{Binding HasNoDisplayedEntries}" />
@@ -123,6 +128,9 @@
                                                     <TextBlock Text="{Binding DateText}" Classes="entry-meta" />
                                                     <controls:StarRatingControl Value="{Binding RatingValue}" IsReadOnly="True" StarSize="16" />
                                                 </StackPanel>
+                                                <TextBlock Text="{Binding Venue}"
+                                                           Classes="entry-meta"
+                                                           IsVisible="{Binding Venue, Converter={x:Static conv:StringConverters.IsNotNullOrEmpty}}" />
                                                 <TextBlock Text="{Binding Note}"
                                                            Classes="entry-note"
                                                            TextWrapping="Wrap"

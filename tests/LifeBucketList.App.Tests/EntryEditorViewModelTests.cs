@@ -60,6 +60,7 @@ public class EntryEditorViewModelTests
     [InlineData(DefaultCategories.Movies, true)]
     [InlineData(DefaultCategories.Series, true)]
     [InlineData(DefaultCategories.VideoGames, true)]
+    [InlineData(DefaultCategories.Concerts, true)]
     [InlineData(DefaultCategories.Destinations, false)]
     [InlineData(DefaultCategories.Activities, false)]
     public void ShowCoverSearch_OnlyTrueForMediaBackedCategories(string categoryName, bool expected)
@@ -68,6 +69,67 @@ public class EntryEditorViewModelTests
         var editor = CreateEditor(new[] { category }, category);
 
         Assert.Equal(expected, editor.ShowCoverSearch);
+    }
+
+    [AvaloniaFact]
+    public void ShowCoverSearch_FalseForConcerts_WhenInFestivalMode()
+    {
+        var category = MakeCategory(DefaultCategories.Concerts);
+        var editor = CreateEditor(new[] { category }, category);
+
+        Assert.True(editor.ShowCoverSearch);
+
+        editor.IsFestivalMode = true;
+
+        Assert.False(editor.ShowCoverSearch);
+    }
+
+    [AvaloniaTheory]
+    [InlineData(DefaultCategories.Concerts, true)]
+    [InlineData(DefaultCategories.Movies, false)]
+    [InlineData(DefaultCategories.Destinations, false)]
+    public void ShowRegionPicker_OnlyTrueForConcerts(string categoryName, bool expected)
+    {
+        var category = MakeCategory(categoryName);
+        var editor = CreateEditor(new[] { category }, category);
+
+        Assert.Equal(expected, editor.ShowRegionPicker);
+    }
+
+    [AvaloniaFact]
+    public void TitlePlaceholder_DiffersBetweenArtistAndFestivalMode()
+    {
+        var category = MakeCategory(DefaultCategories.Concerts);
+        var editor = CreateEditor(new[] { category }, category);
+
+        Assert.Equal("z. B. Peter Fox", editor.TitlePlaceholder);
+
+        editor.IsFestivalMode = true;
+
+        Assert.Equal("z. B. Rock am Ring", editor.TitlePlaceholder);
+    }
+
+    [AvaloniaFact]
+    public void Constructor_WithExistingConcertEntry_HydratesVenueRegionAndFestivalMode()
+    {
+        var category = MakeCategory(DefaultCategories.Concerts);
+        var existingEntry = new Entry
+        {
+            Id = Guid.NewGuid(),
+            CategoryId = category.Id,
+            Title = "Wacken Open Air",
+            Venue = "Wacken",
+            RegionCode = "DE-SH",
+            IsFestival = true,
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow,
+        };
+
+        var editor = CreateEditor(new[] { category }, category, existingEntry);
+
+        Assert.Equal("Wacken", editor.Venue);
+        Assert.Equal("DE-SH", editor.SelectedRegion?.Code);
+        Assert.True(editor.IsFestivalMode);
     }
 
     [AvaloniaFact]
@@ -158,5 +220,18 @@ public class EntryEditorViewModelTests
         Assert.Equal(expected, names);
         // Sanity check: not just accidentally already-sorted input data.
         Assert.NotEqual(WorldCountries.All.Select(c => c.Name).ToList(), names);
+    }
+
+    [AvaloniaFact]
+    public void AvailableRegions_AreSortedAlphabeticallyByGermanName()
+    {
+        var category = MakeCategory(DefaultCategories.Concerts);
+        var editor = CreateEditor(new[] { category }, category);
+
+        var names = editor.AvailableRegions.Select(r => r.Name).ToList();
+        var expected = names.OrderBy(n => n, StringComparer.Create(System.Globalization.CultureInfo.GetCultureInfo("de-DE"), ignoreCase: false)).ToList();
+
+        Assert.Equal(expected, names);
+        Assert.NotEqual(GermanRegions.All.Select(r => r.Name).ToList(), names);
     }
 }
