@@ -29,13 +29,12 @@ public class GermanRegionGeometryProviderTests
         Assert.True(geometry.Bounds.Width > 0);
         Assert.True(geometry.Bounds.Height > 0);
 
-        // Every projected coordinate must fall within the (uncropped) DACH crop window, in
-        // WorldMapGeometryProvider's world-canvas coordinate space.
-        var origin = GermanRegionGeometryProvider.CropOrigin;
-        Assert.InRange(geometry.Bounds.Left, origin.X, origin.X + GermanRegionGeometryProvider.CanvasWidth);
-        Assert.InRange(geometry.Bounds.Right, origin.X, origin.X + GermanRegionGeometryProvider.CanvasWidth);
-        Assert.InRange(geometry.Bounds.Top, origin.Y, origin.Y + GermanRegionGeometryProvider.CanvasHeight);
-        Assert.InRange(geometry.Bounds.Bottom, origin.Y, origin.Y + GermanRegionGeometryProvider.CanvasHeight);
+        // Geometries are built directly in canvas-local coordinates (the projection already bakes in
+        // the translate that keeps everything positive), so bounds must fall within the canvas itself.
+        Assert.InRange(geometry.Bounds.Left, 0, GermanRegionGeometryProvider.CanvasWidth);
+        Assert.InRange(geometry.Bounds.Right, 0, GermanRegionGeometryProvider.CanvasWidth);
+        Assert.InRange(geometry.Bounds.Top, 0, GermanRegionGeometryProvider.CanvasHeight);
+        Assert.InRange(geometry.Bounds.Bottom, 0, GermanRegionGeometryProvider.CanvasHeight);
     }
 
     [AvaloniaFact]

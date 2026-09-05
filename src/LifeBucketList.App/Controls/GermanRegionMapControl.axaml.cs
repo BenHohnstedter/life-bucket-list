@@ -71,8 +71,6 @@ public partial class GermanRegionMapControl : UserControl
 
         _canvas.Width = GermanRegionGeometryProvider.CanvasWidth;
         _canvas.Height = GermanRegionGeometryProvider.CanvasHeight;
-        var cropOrigin = GermanRegionGeometryProvider.CropOrigin;
-        _canvas.RenderTransform = new TranslateTransform(-cropOrigin.X, -cropOrigin.Y);
         _canvas.Children.Clear();
         _shapesByRegionCode.Clear();
 
